@@ -1,5 +1,7 @@
 # Use php image
-FROM golang:1.19.1-bullseye
+FROM denoland/deno:debian as deno-build
+
+FROM debian:bullseye
 
 ENV DOCKER_BUILDKIT=true
 ENV DEBIAN_FRONTEND=noninteractive
@@ -48,8 +50,7 @@ RUN if [ test -n $ADDGROUP ]; \
     fi \
     fi
 
-COPY ./home ${SERVER_HOME}
-# COPY ./.zshrc ${SERVER_HOME}/.zshrc
+COPY ./home/.ssh ${SERVER_HOME}/.ssh
 RUN chown -R ${SERVER_USER}:${SERVER_GROUP} ${SERVER_HOME}/.ssh \
     && chmod 400 ${SERVER_HOME}/.ssh/**
 
@@ -59,20 +60,30 @@ RUN mkdir -p ${SERVER_HOME}/.vscode-server/extensions \
     ${SERVER_HOME}/.vscode-server \
     ${SERVER_HOME}/.vscode-server-insiders
 
-# Copy library scripts to execute
-COPY ./library-scripts /tmp/library-scripts
-
 RUN apt-get update
 
 # common
+COPY ./library-scripts/common-debian.sh /tmp/library-scripts/common-debian.sh
 RUN bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${SERVER_USER}" "${SERVER_USER_ID}" "${SERVER_GROUP_ID}" "${UPGRADE_PACKAGES}" "${INSTALL_ZSH}" "${UPGRADE_PACKAGES}"
 
 # [enable non-root docker access flag] [non-root user] [use moby] [Engine/CLI Version] [Major version for docker-compose]
+COPY ./library-scripts/docker-in-docker-debian.sh /tmp/library-scripts/docker-in-docker-debian.sh
 RUN /bin/bash /tmp/library-scripts/docker-in-docker-debian.sh "true" "${SERVER_USER}" "true" "latest" "v2"
+
+# deno
+COPY --from=deno-build /usr/bin/deno /usr/bin/deno
+COPY --from=deno-build /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
+COPY --from=deno-build /lib64 /lib64
+
+# .zshrc
+COPY ./home/.zshrc ${SERVER_HOME}/.zshrc
+RUN chown ${SERVER_USER}:${SERVER_GROUP} ${SERVER_HOME}/.zshrc
 
 RUN apt-get -y install --no-install-recommends \
     jq \ 
     fzf 
+
+# RUN /bin/bash snapd install deno
 
 COPY ./start.sh /usr/start.sh
 

@@ -1,32 +1,17 @@
 networks:
-  instastar:
+  fresh_spots:
     driver: bridge
     ipam:
       config:
-        - subnet: 169.254.171.0/24
-          gateway: 169.254.171.1
+        - subnet: 169.254.173.0/24
+          gateway: 169.254.173.1
 services:
-  op-connect-api:
-    image: 1password/connect-api:latest
-    volumes:
-      - "./home/1password-credentials.json:/home/opuser/.op/1password-credentials.json"
-      - "op_data:/home/opuser/.op/data"
-    networks:
-      instastar:
-        ipv4_address: 169.254.171.2
-  op-connect-sync:
-    image: 1password/connect-sync:latest
-    volumes:
-      - "./home/1password-credentials.json:/home/opuser/.op/1password-credentials.json"
-      - "op_data:/home/opuser/.op/data"
-    networks:
-      instastar:
-        ipv4_address: 169.254.171.3
   workspace:
     build: 
       context: .
       dockerfile: Dockerfile
     privileged: true
+    platform: linux/arm64
     ipc: host
     volumes:
       - source: extensions
@@ -39,29 +24,13 @@ services:
         target: /var/run/docker.sock
         type: bind
       - ..:/workspace:cached
-    environment:
-      - OP_CONNECT_HOST=http://op-connect-api:8080
     env_file:
       - .env
     networks:
-      instastar:
-        ipv4_address: 169.254.171.4
+      fresh_spots:
+        ipv4_address: 169.254.173.2
         aliases:
           - workspace.fresh-spots.com
-  # db:
-  #   image: mongo:latest
-  #   restart: unless-stopped
-  #   volumes:
-  #     - mongodb-data:/data/db
-  #   # Uncomment to change startup options
-  #   environment:
-  #    MONGO_INITDB_ROOT_USERNAME: root
-  #    MONGO_INITDB_ROOT_PASSWORD: example
-  #    MONGO_INITDB_DATABASE: your-database-here
-  #   networks:
-  #     local:
-  #       ipv4_address: 169.254.171.5
 volumes:
   extensions:
   server-insiders:
-  op_data:
