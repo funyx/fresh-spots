@@ -1,0 +1,34 @@
+{
+	"name": "FreshSpots",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "workspace",
+	"workspaceFolder": "/workspace",
+	"remoteUser": "vscode:vscode",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"2gua.rainbow-brackets",
+				"dbaeumer.vscode-eslint",
+				"ms-azuretools.vscode-docker",
+				"oderwat.indent-rainbow",
+				"tombonnike.vscode-status-bar-format-toggle",
+				"vscode-icons-team.vscode-icons",
+				"denoland.vscode-deno"
+			]
+		}
+	},
+	"settings": {
+		"deno.enable": true,
+		"eslint.enable": false,
+		"deno.lint": true,
+		"editor.formatOnSave": true,
+		"cSpell.words": [
+			"kysely",
+			"preact",
+			"twind"
+		],
+		"editor.quickSuggestions": {
+			"strings": "on"
+		}
+	}
+}
