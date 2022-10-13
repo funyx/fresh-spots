@@ -26,11 +26,37 @@ services:
       - ..:/workspace:cached
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOST=db.fresh-spots.com
     networks:
       fresh_spots:
-        ipv4_address: 169.254.173.2
         aliases:
-          - workspace.fresh-spots.com
+          - app.fresh-spots.com
+  prostgres:
+    image: postgis/postgis
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    networks:
+      fresh_spots:
+        aliases:
+          - db.fresh-spots.com
+  adminer:
+    depends_on:
+      - prostgres
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080
+    networks:
+      fresh_spots:
+        aliases:
+          - adminer.fresh-spots.com
 volumes:
   extensions:
   server-insiders:
+  db-data:

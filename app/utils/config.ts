@@ -11,18 +11,18 @@ if (Deno.env.get(EnvNames.DENO_ENV) !== "production") {
 import { Config, ConfigSchema } from "@/schemas/Config.ts";
 
 const envConfig: Config = {
-  cookie_secret: Deno.env.get(EnvNames.COOKIE_SECRET) || "",
-  map_tile_url: Deno.env.get(EnvNames.MAP_TILE_URL) || "",
+  cookie_secret: Deno.env.get(EnvNames.APP_COOKIE_SECRET) || "",
+  map_tile_url: Deno.env.get(EnvNames.APP_MAP_TILE_URL) || "",
   // TODO: update to use parameterized port
-  base_url: Deno.env.get(EnvNames.BASE_URL) ||
+  base_url: Deno.env.get(EnvNames.APP_BASE_URL) ||
     "http://localhost:8000",
   environment: Deno.env.get(EnvNames.DENO_ENV) || "",
   db: {
-    database: Deno.env.get(EnvNames.DB_NAME) || "",
-    host: Deno.env.get(EnvNames.DB_HOST) || "",
-    username: Deno.env.get(EnvNames.DB_USERNAME) || "",
-    password: Deno.env.get(EnvNames.DB_PASSWORD) || "",
-    port: Number(Deno.env.get(EnvNames.DB_PORT) || 5432),
+    database: Deno.env.get(EnvNames.POSTGRES_DB) || "",
+    host: Deno.env.get(EnvNames.POSTGRES_HOST) || "",
+    username: Deno.env.get(EnvNames.POSTGRES_USER) || "",
+    password: Deno.env.get(EnvNames.POSTGRES_PASSWORD) || "",
+    port: Number(Deno.env.get(EnvNames.POSTGRES_PORT) || 5432),
   },
   db_uri: "",
   oauth: {

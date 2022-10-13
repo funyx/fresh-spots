@@ -13,7 +13,8 @@
 				"oderwat.indent-rainbow",
 				"tombonnike.vscode-status-bar-format-toggle",
 				"vscode-icons-team.vscode-icons",
-				"denoland.vscode-deno"
+				"denoland.vscode-deno",
+				"Gruntfuggly.todo-tree"
 			]
 		}
 	},

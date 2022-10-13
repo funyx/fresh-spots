@@ -1,14 +1,13 @@
 # Use php image
-FROM denoland/deno:debian as deno-build
+# FROM denoland/deno:debian as deno-build
 
 FROM debian:bullseye
 
 ENV DOCKER_BUILDKIT=true
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ZSH=/home/vscode
-ENV NVM_DIR=/usr/local/share/nvm
-ENV NVM_SYMLINK_CURRENT=true \
-    PATH=${NVM_DIR}/current/bin:${PATH}
+ENV DENO_INSTALL=/home/vscode/.deno
+ENV PATH=${DENO_INSTALL}/bin:${PATH}
 
 ARG SERVER_NAME=vscode
 ARG SERVER_GROUP=vscode
@@ -71,9 +70,11 @@ COPY ./library-scripts/docker-in-docker-debian.sh /tmp/library-scripts/docker-in
 RUN /bin/bash /tmp/library-scripts/docker-in-docker-debian.sh "true" "${SERVER_USER}" "true" "latest" "v2"
 
 # deno
-COPY --from=deno-build /usr/bin/deno /usr/bin/deno
-COPY --from=deno-build /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
-COPY --from=deno-build /lib64 /lib64
+COPY ./library-scripts/deno-install.sh /tmp/library-scripts/deno-install.sh
+RUN /bin/bash /tmp/library-scripts/deno-install.sh
+# COPY --from=deno-build /usr/bin/deno /usr/bin/deno
+# COPY --from=deno-build /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
+# COPY --from=deno-build /lib64 /lib64
 
 # .zshrc
 COPY ./home/.zshrc ${SERVER_HOME}/.zshrc
